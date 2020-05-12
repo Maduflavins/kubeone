@@ -17,10 +17,10 @@ limitations under the License.
 package kubeone
 
 import (
-	"errors"
 	"math/rand"
 
 	"github.com/Masterminds/semver"
+	"github.com/pkg/errors"
 )
 
 // Leader returns the first configured host. Only call this after
@@ -102,6 +102,34 @@ func (p CloudProviderSpec) CloudProviderInTree() bool { //nolint:stylecheck
 	}
 
 	return false
+}
+
+// SetCloudProvider sets the cloud provider depending on the given name
+func (p *CloudProviderSpec) SetCloudProvider(name string) error { //nolint:stylecheck
+	switch name {
+	case "aws":
+		p.AWS = &AWSSpec{}
+	case "azure":
+		p.Azure = &AzureSpec{}
+	case "digitalocean":
+		p.DigitalOcean = &DigitalOceanSpec{}
+	case "gce":
+		p.GCE = &GCESpec{}
+	case "hetzner":
+		p.Hetzner = &HetznerSpec{}
+	case "openstack":
+		p.Openstack = &OpenstackSpec{}
+	case "packet":
+		p.Packet = &PacketSpec{}
+	case "vsphere":
+		p.Vsphere = &VsphereSpec{}
+	case "none":
+		p.None = &NoneSpec{}
+	default:
+		return errors.Errorf("provider %q is not supported", name)
+	}
+
+	return nil
 }
 
 // KubernetesCNIVersion returns kubernetes-cni package version
